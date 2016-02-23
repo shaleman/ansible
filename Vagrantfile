@@ -32,7 +32,9 @@ Vagrant.configure(2) do |config|
     (0..1).each do |n|
         node_name = "host#{n}"
         config.vm.define node_name do |node|
-            node.vm.hostname = node_name
+            #XXX: disable syncing vagrant dir as ubuntu box doesn't have vbox
+            #addtions and we don't need that dir.
+            node.vm.synced_folder ".", "/vagrant", disabled: true
             if n == 0 then
                 node.vm.box = "puppetlabs/centos-7.2-64-nocm"
                 node.vm.box_version = "1.0.0"
@@ -43,8 +45,8 @@ Vagrant.configure(2) do |config|
                 end
             else
                 #node.vm.box = "puppetlabs/ubuntu-14.04-64-nocm"
-                node.vm.box = "box-cutter/ubuntu1504"
-                node.vm.box_version = "2.0.12"
+                node.vm.box = "gbarbieru/xenial"
+                node.vm.box_version = "0.0.4"
             end
 
             # set the vm's ram and cpu big enough for docker to run fine
