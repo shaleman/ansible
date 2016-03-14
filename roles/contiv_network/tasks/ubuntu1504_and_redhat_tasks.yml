@@ -1,0 +1,15 @@
+- name: copy systemd units for netplugin
+  template: src=netplugin.service.j2 dest=/etc/systemd/system/netplugin.service
+
+- name: start netplugin
+  shell: systemctl daemon-reload && systemctl start netplugin
+
+- name: copy systemd units for netmaster
+  template: src=netmaster.service.j2 dest=/etc/systemd/system/netmaster.service
+  when: run_as == "master"
+
+# resolves an issue with netmaster: https://github.com/contiv/netplugin/issues/210
+- name: start netmaster
+  shell: systemctl daemon-reload && systemctl start netmaster
+  when: run_as == "master"
+  run_once: true

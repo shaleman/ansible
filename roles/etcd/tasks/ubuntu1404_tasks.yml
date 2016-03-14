@@ -1,0 +1,11 @@
+- name: start etcd
+  shell: >
+      set -e;
+      echo "script" > {{ etcd_upstart_file }};
+      echo "/usr/bin/etcd.sh start 1>/tmp/etcd.log 2>/tmp/etcd.log" >> {{ etcd_upstart_file }};
+      echo "end script" >> {{ etcd_upstart_file }};
+      echo "post-stop script" >> {{ etcd_upstart_file }};
+      echo "/usr/bin/etcd.sh stop" >> {{ etcd_upstart_file }};
+      echo "end script" >> {{ etcd_upstart_file }};
+      service etcd start
+  become: true

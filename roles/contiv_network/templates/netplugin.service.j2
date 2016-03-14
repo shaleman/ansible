@@ -3,6 +3,6 @@ Description=Netplugin
 After=auditd.service systemd-user-sessions.service time-sync.target etcd.service
 
 [Service]
-EnvironmentFile=/etc/default/netplugin
-ExecStart=/usr/bin/netplugin $NETPLUGIN_ARGS
+EnvironmentFile={{ netplugin_env_file }}
+ExecStart={{ netplugin_bin_file }} $NETPLUGIN_ARGS
 KillMode=control-group

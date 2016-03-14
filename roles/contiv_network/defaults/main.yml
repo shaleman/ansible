@@ -7,6 +7,12 @@
 contiv_network_mode: "standalone" # Accepted values: standalone, aci
 netplugin_mode: "docker" # Accepted values: docker, kubernetes
 fwd_mode: "bridge" #Accepted values: bridge , routing
+netplugin_env_file: /etc/default/netplugin
+netplugin_bin_file: /usr/bin/netplugin
+netplugin_upstart_file: /etc/init/netplugin.conf
+netmaster_env_file: /etc/default/netmaster
+netmaster_bin_file: /usr/bin/netmaster
+netmaster_upstart_file: /etc/init/netmaster.conf
 
 contiv_network_version: "v0.1-03-05-2016.09-42-48.UTC"
 contiv_network_tar_file: "netplugin-{{ contiv_network_version }}.tar.bz2"

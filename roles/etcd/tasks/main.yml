@@ -20,8 +20,9 @@
   template: src=etcd.j2 dest=/usr/bin/etcd.sh mode=u=rwx,g=rx,o=rx
   when: (etcd_init_cluster == true) or (etcd_init_cluster == false and node_addr != etcd_master_addr)
 
-- name: copy systemd units for etcd
-  copy: src=etcd.service dest=/etc/systemd/system/etcd.service
+- include: ubuntu1404_tasks.yml
+  when: ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int <= 14
 
-- name: start etcd
-  service: name=etcd state=started
+- include: ubuntu1504_and_redhat_tasks.yml
+  when: ansible_os_family == "RedHat" or
+      (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int > 14 )

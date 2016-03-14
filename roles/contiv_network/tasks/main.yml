@@ -44,31 +44,22 @@
 - name: copy environment file for netplugin
   template: src=netplugin.j2 dest=/etc/default/netplugin
 
-- name: copy systemd units for netplugin
-  copy: src=netplugin.service dest=/etc/systemd/system/netplugin.service
-
-- name: copy bash auto complete file for netctl
-  file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
-
-- name: start netplugin
-  shell: systemctl daemon-reload && systemctl start netplugin
-
-- name: setup netmaster host alias
-  shell: echo "{{ service_vip }} netmaster" >> /etc/hosts
-
 - name: copy environment file for netmaster
   copy: src=netmaster dest=/etc/default/netmaster
   when: run_as == "master"
 
-- name: copy systemd units for netmaster
-  copy: src=netmaster.service dest=/etc/systemd/system/netmaster.service
-  when: run_as == "master"
+- include: ubuntu1404_tasks.yml
+  when: ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int <= 14
 
-# resolves an issue with netmaster: https://github.com/contiv/netplugin/issues/210
-- name: start netmaster
-  shell: systemctl daemon-reload && systemctl start netmaster
-  when: run_as == "master"
-  run_once: true
+- include: ubuntu1504_and_redhat_tasks.yml
+  when: ansible_os_family == "RedHat" or
+      (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int > 14 )
+
+- name: copy bash auto complete file for netctl
+  file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
+
+- name: setup netmaster host alias
+  shell: echo "{{ service_vip }} netmaster" >> /etc/hosts
 
 # FIXME: need to move the following tasks to correct role
 - name: download contivctl

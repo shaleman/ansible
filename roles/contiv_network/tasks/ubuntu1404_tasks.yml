@@ -1,0 +1,20 @@
+- name: start netplugin
+  shell: >
+      set -e;
+      echo "script" > {{ netplugin_upstart_file }};
+      echo ". {{ netplugin_env_file }} && {{ netplugin_bin_file }} \$NETPLUGIN_ARGS  1>/tmp/netplugin.log 2>/tmp/netplugin.log" >> {{ netplugin_upstart_file }};
+      echo "end script" >> {{ netplugin_upstart_file }};
+      service netplugin start;
+  become: true
+
+# resolves an issue with netmaster: https://github.com/contiv/netplugin/issues/210
+- name: start netmaster
+  shell: >
+      set -e;
+      echo "script" > {{ netmaster_upstart_file }};
+      echo ". {{ netmaster_env_file }} && {{ netmaster_bin_file }} \$NETMASTER_ARGS  1>/tmp/netmaster.log 2>/tmp/netmaster.log" >> {{ netmaster_upstart_file }};
+      echo "end script" >> {{ netmaster_upstart_file }};
+      service netmaster start;
+  become: true
+  when: run_as == "master"
+  run_once: true
