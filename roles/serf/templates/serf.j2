@@ -11,11 +11,17 @@ start)
     # fail on error
     set -e
 
-    # install necessary iptables to let mdns work
-    # XXX: the interface name should be discovered
-    echo setting up iptables for mdns
-    iptables -I INPUT -p udp --dport 5353 -i {{ serf_discovery_interface }}  -j ACCEPT && \
-    iptables -I INPUT -p udp --sport 5353 -i {{ serf_discovery_interface }}  -j ACCEPT
+    # install necessary iptables to let serf work
+    echo setting up iptables for serf
+    ( /sbin/iptables -L INPUT | grep 'serf discovery sport' || \
+        /sbin/iptables -I INPUT 1 -p udp --sport 5353 -i {{ serf_discovery_interface }}  \
+        -j ACCEPT -m comment --comment "serf discovery sport" )
+    ( /sbin/iptables -L INPUT | grep 'serf discovery dport' || \
+        /sbin/iptables -I INPUT 1 -p udp --dport 5353 -i {{ serf_discovery_interface }}  \
+        -j ACCEPT -m comment --comment "serf discovery dport" )
+    ( /sbin/iptables -L INPUT | grep 'serf control' || \
+        /sbin/iptables -I INPUT 1 -p tcp --dport 7946 -i {{ serf_discovery_interface }}  \
+        -j ACCEPT -m comment --comment "serf control" )
 
     echo starting serf
     label=$(hostname)

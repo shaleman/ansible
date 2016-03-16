@@ -14,3 +14,9 @@
 
 - name: start swarm
   service: name=swarm state=started
+
+- name: setup iptables for swarm
+  shell: iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "swarm traffic"
+  become: true
+  with_items:
+    - "{{ swarm_api_port }}"
